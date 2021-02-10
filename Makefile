@@ -1,21 +1,39 @@
-NAME = main
+NAME = libasm.a
 
-NSRCS = ft_strlen.s
+EJECUTABLE = libasm
 
-CSRCS = main.c
+SRCS = ft_strlen.s ft_strcpy.s ft_strcmp.s ft_write.s ft_read.s ft_strdup.s
 
-OFLAGS = ./nasm -f macho64
+MAIN = main.c
 
-CFLAGS = gcc -Wextra -Werror -W
+INCLUDE = .
+
+NASM = ./nasm -f macho64
+
+GCC = gcc -Wextra -Werror -Wall
 
 CLEAN = rm -f
 
-$(NAME):
-	$(OFLAGS) $(NSRCS) 
-	$(CFLAGS) *.o $(CSRCS) -o $(NAME)
+OBJS = ${SRCS:.s=.o}
+
+.s.o: $(SRCS)
+	$(NASM) $^
+
+all: $(NAME)
+
+$(NAME): $(OBJS)
+	ar rc $(NAME) $(OBJS) 
+	
+run:	
+	$(GCC) $(OBJS) $(MAIN) -I$(INCLUDE) $(NAME) -o $(EJECUTABLE) 
+	./$(EJECUTABLE)
 
 clean:
-	$(CLEAN) *.o
+	$(CLEAN) $(OBJS)
 
 fclean: clean
-	$(CLEAN) $(NAME)
+	$(CLEAN) $(NAME) $(EJECUTABLE)
+
+re: fclean all
+
+.PHONY: run clean re run all fclean
